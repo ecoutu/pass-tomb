@@ -90,10 +90,10 @@ _timer() {
 	_tmp_create
 	_tomb_name="${TOMB_FILE##*/}"
 	_tomb_name="${_tomb_name%.*}"
-	sudo systemd-run --system --on-active="$delay" \
-	                 --description="pass-close timer" \
-	                 --unit="pass-close@$_tomb_name.service" \
-	                 &> "$TMP"
+  systemd-run --user --on-active="$delay" \
+              --description="pass-close timer" \
+              --unit="pass-close@$_tomb_name.service" \
+              &> "$TMP"
 	ret=$?
 	while read -r ii; do
 		_verbose "$ii"
