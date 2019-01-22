@@ -31,7 +31,7 @@ install: install_share
 	@install -Dm0755 open.bash "${DESTDIR}${SYSTEM_EXTENSION_DIR}/open.bash"
 	@install -Dm0755 close.bash "${DESTDIR}${SYSTEM_EXTENSION_DIR}/close.bash"
 	@install -Dm0755 timer.bash "${DESTDIR}${SYSTEM_EXTENSION_DIR}/timer.bash"
-	@install -Dm0644 pass-close@.service "${DESTDIR}${LIBDIR}/systemd/system/pass-close@.service"
+	@install -Dm0644 pass-close@.service "${DESTDIR}${LIBDIR}/systemd/user/pass-close@.service"
 	@echo "pass-${EXT} is installed succesfully"
 
 COVERAGE ?= true
