@@ -1,13 +1,13 @@
 PROG ?= tomb
-PREFIX ?= /usr
+PREFIX ?= $(HOME)
 DESTDIR ?=
 LIBDIR ?= $(PREFIX)/lib
 SYSTEM_EXTENSION_DIR ?= $(LIBDIR)/password-store/extensions
 MANDIR ?= $(PREFIX)/share/man
 SYSTEMD_DIR ?= $(LIBDIR)/systemd/system
 
-BASHCOMPDIR ?= /etc/bash_completion.d
-ZSHCOMPDIR ?= $(PREFIX)/share/zsh/site-functions
+BASHCOMPDIR ?= $(PREFIX)/.config/bash_completion
+ZSHCOMPDIR ?= $(PREFIX)/.zsh/functions
 
 all:
 	@echo "pass-$(PROG) is a shell script and does not need compilation, it can be simply executed."
@@ -16,6 +16,36 @@ all:
 	@echo
 	@echo "To run pass $(PROG) one needs to have some tools installed on the system:"
 	@echo "     Tomb and password store"
+
+installuser:
+	@install -v -d "$(PREFIX)/.local/share/man/man1"
+	@install -v -d "$(PREFIX)/.password-store/.extensions/"
+	@install -v -d "$(BASHCOMPDIR)" "$(ZSHCOMPDIR)"
+	@install -v -d "$(PREFIX)/.config/systemd/user"
+	@install -v -m 0755 $(PROG).bash "$(PREFIX)/.password-store/.extensions/$(PROG).bash"
+	@install -v -m 0755 open.bash "$(PREFIX)/.password-store/.extensions/open.bash"
+	@install -v -m 0755 close.bash "$(PREFIX)/.password-store/.extensions/close.bash"
+	@install -v -m 0644 pass-$(PROG).1 "$(PREFIX)/.local/share/man/man1/pass-$(PROG).1"
+	@install -v -m 0644 timer/pass-close@.service "$(PREFIX)/.config/systemd/user/pass-close@.service"
+	@install -v -m 0644 "completion/pass-$(PROG).bash" "$(BASHCOMPDIR)/pass-$(PROG)"
+	@install -v -m 0644 "completion/pass-$(PROG).zsh" "$(ZSHCOMPDIR)/_pass-$(PROG)"
+	@install -v -m 0644 "completion/pass-open.zsh" "$(ZSHCOMPDIR)/_pass-open"
+	@install -v -m 0644 "completion/pass-close.zsh" "$(ZSHCOMPDIR)/_pass-close"
+	@echo
+	@echo "pass-$(PROG) is installed succesfully"
+	@echo
+
+uninstalluser:
+	@rm -vrf \
+	  "$(PREFIX)/.password-store/.extensions/$(PROG).bash" \
+	  "$(PREFIX)/.password-store/.extensions/open.bash" \
+	  "$(PREFIX)/.password-store/.extensions/close.bash" \
+	  "$(PREFIX)/.local/share/man/man1/pass-$(PROG).1" \
+	  "$(PREFIX)/.config/systemd/user/pass-close@.service" \
+	  "$(BASHCOMPDIR)/pass-$(PROG)" \
+	  "$(ZSHCOMPDIR)/_pass-$(PROG)" \
+	  "$(ZSHCOMPDIR)/_pass-open" \
+	  "$(ZSHCOMPDIR)/_pass-close"
 
 install:
 	@install -v -d "$(DESTDIR)$(MANDIR)/man1"
@@ -67,4 +97,4 @@ clean:
 	@rm -vrf tests/test-results/ tests/gnupg/random_seed
 
 
-.PHONY: install uninstall tests $(T) lint clean
+.PHONY: install installuser uninstall tests $(T) lint clean
